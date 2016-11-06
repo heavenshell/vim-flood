@@ -1,0 +1,117 @@
+*flood*	Vim plguin for Flow.
+
+Version: 0.1.0
+Author: Shinya Ohynagi <sohyanagi@gmail.com>
+Repository: http://github.com/heavenshell/vim-flood/
+License: BSD, see LICENSE for more details.
+
+==============================================================================
+CONTENTS						*flood-contents*
+
+Introduction		|flood-introduction|
+Install			|flood-install|
+Tutorial		|flood-tutorial|
+Variables		|flood-variables|
+Changelogs		|flood-changelog|
+
+==============================================================================
+INTRODUCTION						*flood-introduction*
+
+|flood.vim| is a wrapper of Facebook Flow.
+
+This plugin provides the following functions:
+
++ Queries autocompletion information
+  Execute `$ flow autocomplete`
+
++ Run typechecker on contents
+  Execute `$ flow check-contents`
+
++ Gets the definition location of a variable or property
+  Execute `$ flow get-def`
+
++ Gets a list of all importers for one or more given modules
+  Execute `$ flow get-importers`
+
++ Get names of all modules imported by one or more given modules
+  Execute `$ flow imports`
+
++ Starts a Flow server
+  Execute `$ flow start`
+
++ Shows current Flow errors by asking the Flow server
+  Execute `$ flow status`
+
++ Stops a Flow server
+  Execute `$ flow stop`
+
++ Shows type annotation suggestions for given files
+  Execute `$ flow status`
+
++ Print version information
+  Execute `$ version`
+
+==============================================================================
+INSTALL							*flood-install*
+
+Install the distributed files into Vim runtime directory which is usually
+~/.vim/, or $HOME/vimfiles on Windows.
+
+If you install pathogen that provided from Tim Pope, you should extract the
+file into 'bundle' directory.
+
+==============================================================================
+TUTORIAL						*flood-tutorial*
+
+Configure:
+
+flood.vim execute `flood#init()` on start.
+
++ Add |omnifunc| setting
++ Add |autocmd| setting when buffer saved
++ Remap definition setting
+
+==============================================================================
+VARIABLES					*flood-variables*
+g:flood_flow_bin				*g:flood_flow_bin*
+		Path to flow-bin.
+
+		Default value is .node_modules/.bin/flow.
+
+g:flood_enable_quickfix				*g:flood_enable_quickfix*
+		Enable to open QuickFix window automatically
+
+		Default value is 1(Open automatically)
+
+g:flood_complete_async				*g:flood_complete_async*
+		Enable asyn complete.
+		Currently asyn complete is not supported
+
+		Default value is 0(Open automatically)
+
+g:flood_definition_split			*g:flood_definition_split*
+		Use `split`, `vsplit`, `tabedit` when jump to definition.
+		`edit = 0`
+		`split = 1`
+		`vsplit = 2`
+		`tabedit = 3`
+
+		Default value is 0(Jump to definition in same buffer).
+
+g:flood_suggest_window				*g:flood_suggest_window*
+		Open suggest window with specify position.
+		see |windows| help.
+
+		Default value is topleft.
+
+g:flood_enable_init_onstartena			*g:flood_enable_init_onstart*
+		Execute initialize flood.vim settings.
+
+		Default value is 1(Do initialize).
+
+==============================================================================
+CHANGELOG						*flood-changelog*
+2016-11-05
+- First release
+
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:
