@@ -26,7 +26,6 @@ function! flood#start#run() abort
     call job_stop(s:job)
   endif
 
-  let file = expand('%:p')
   let cmd = printf('%s start --json', flood#flowbin())
   let s:job = job_start(cmd, {
         \ 'callback': {c, m -> s:start_callback(m)},
