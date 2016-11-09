@@ -42,10 +42,10 @@ function! s:parse(result, input_word, async)
     " Async completions currently not work.
     " Sync completions is fast.
     if a:async == 1
-      call complete_add(entry)
       if complete_check()
         break
       endif
+      call complete_add(entry)
     else
       call add(completions, entry)
     endif
@@ -54,8 +54,60 @@ function! s:parse(result, input_word, async)
   return completions
 endfunction
 
-function! flood#complete#async(lines, base, current_line, offset)
-  throw 'Not implemented.'
+function! s:complete_callback(msg)
+  let json = json_decode(a:msg)
+  let result = json['result']
+
+  let completions = []
+  for v in result
+    " Flow returns current inputing word. So filter it.
+    let kind = 'v'
+    if v['type'] =~ '^(.*) =>'
+      let kind = 'm'
+    elseif v['type'] =~ '^[class:'
+      let kind = 'c'
+    endif
+    let entry = {'word': v['name'], 'kind': kind, 'menu': v['type']}
+
+    " Async completions currently not work.
+    " Sync completions is fast.
+    "if a:async == 1
+    if complete_check()
+      break
+    endif
+    call complete_add(entry)
+    "else
+    "  call add(completions, entry)
+    "endif
+  endfor
+  call complete(col('.'), completions)
+
+  return completions
+endfunction
+
+function! flood#complete#async()
+  if exists('s:job') && job_status(s:job) != 'stop'
+    call job_stop(s:job)
+  endif
+
+  let current_line = line('.')
+  let offset = col('.')
+  let current_path = expand('%p')
+
+  let file = expand('%:p')
+  let cmd = printf(
+        \ '%s autocomplete --json %d %d',
+        \ flood#flowbin(),
+        \ current_line,
+        \ offset
+        \ )
+
+  let s:job = job_start(cmd, {
+        \ 'callback': {c, m -> s:complete_callback(m)},
+        \ 'in_io': 'buffer',
+        \ 'in_name': file
+        \ })
+  return ''
 endfunction
 
 " Execute `flow autocomplete --json` with magic token.

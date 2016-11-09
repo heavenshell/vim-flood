@@ -13,11 +13,13 @@ let g:flood_flow_bin = get(g:, 'flood_flow_bin', '')
 " Enable open quickfix.
 let g:flood_enable_quickfix = get(g:, 'flood_enable_quickfix', 1)
 " Currently, sync completions supported only.
-let g:flood_complete_async = get(g:, 'flood_complete_async', 0)
+let g:flood_complete_async = get(g:, 'flood_complete_async', 1)
 " Jump definition with `:edit`, `:split', `:vsplit', `:tabedit`.
 let g:flood_definition_split = get(g:, 'flood_definition_split', 0)
 " Open suggest result at ''
 let g:flood_suggest_window = get(g:, 'flood_suggest_window', 'topleft')
+" Async complete command.
+let g:flood_complete_async_command = get(g:, 'flood_complete_async_command', '<C-x><C-o> ')
 
 function! s:detect_flowbin(srcpath)
   let flow = ''
@@ -48,6 +50,11 @@ endfunction
 
 " Omnifunction
 function! flood#complete(findstart, base)
+  if g:flood_complete_async == 1
+    "call flood#complete#async(lines, a:base, current_line, offset)
+    return a:findstart ? -3 : []
+  endif
+
   let line = getline('.')
   let start = col('.') - 1
   " Check a-z, A-Z, 127 to 255 byte
@@ -61,20 +68,14 @@ function! flood#complete(findstart, base)
   let current_line = line('.')
   let lines = getline(1, '$')
   let offset = start + 1
-  let completions = []
 
-  " Currently sync is only supported.
-  if g:flood_complete_async == 0
-    let completions = flood#complete#sync(lines, a:base, current_line, offset)
-  endif
+  let completions = flood#complete#sync(lines, a:base, current_line, offset)
 
   return completions
 endfunction
 
 " Initialize plugin settings.
 function! flood#init() abort
-  setlocal omnifunc=flood#complete
-
   " Open quickfix window if error detect.
   if g:flood_enable_quickfix == 1
     augroup flood_enable_quickfix
@@ -87,6 +88,14 @@ function! flood#init() abort
     map <buffer> <C-]> <Plug>(FloodDefinition)
   endif
 
+  if g:flood_complete_async == 1
+    echomsg g:flood_complete_async_command
+    execute 'inoremap <buffer> ' . g:flood_complete_async_command . '<C-R>=flood#complete#async()<CR>'
+
+    "inoremap <silent> <buffer> . .<C-R>=flood#complete#async()<CR>
+  else
+    setlocal omnifunc=flood#complete
+  endif
 endfunction
 
 let &cpo = s:save_cpo
