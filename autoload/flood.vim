@@ -87,7 +87,7 @@ function! flood#init() abort
   if g:flood_enable_quickfix == 1
     augroup flood_enable_quickfix
       autocmd!
-      autocmd BufWritePost *.js,*.jsx silent! call flood#check_contents#run()
+      autocmd BufWritePost *.js,*.jsx silent! call flood#check#run()
     augroup END
   endif
 

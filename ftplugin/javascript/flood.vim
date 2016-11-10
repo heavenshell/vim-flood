@@ -18,6 +18,7 @@ if !has('channel') || !has('job')
   finish
 endif
 
+command! -buffer FloodCheck         :call flood#check#run()
 command! -buffer FloodCheckContents :call flood#check_contents#run()
 command! -buffer FloodDefinition    :call flood#definition#run()
 command! -buffer FloodImporters     :call flood#importers#run()
@@ -28,15 +29,16 @@ command! -buffer FloodStop          :call flood#stop#run()
 command! -buffer FloodSuggest       :call flood#suggest#run()
 command! -buffer FloodVersion       :call flood#version#run()
 
-noremap <silent> <buffer> <Plug>(FloodCheckContents) :FloodCheckContents <CR>
-noremap <silent> <buffer> <Plug>(FloodDefinition)    :FloodDefinition <CR>
-noremap <silent> <buffer> <Plug>(FloodImporters)     :FloodImporters <CR>
-noremap <silent> <buffer> <Plug>(FloodImports)       :FloodImports <CR>
-noremap <silent> <buffer> <Plug>(FloodStart)         :FloodStart <CR>
-noremap <silent> <buffer> <Plug>(FloodStatus)        :FloodStatus <CR>
-noremap <silent> <buffer> <Plug>(FloodStop)          :FloodStop <CR>
-noremap <silent> <buffer> <Plug>(FloodSuggest)       :FloodSuggest <CR>
-noremap <silent> <buffer> <Plug>(FloodVersion)       :FloodVersion <CR>
+noremap <silent> <buffer> <Plug>(FloodCheck)          :FloodCheck <CR>
+noremap <silent> <buffer> <Plug>(FloodCheckContents)  :FloodCheckContents <CR>
+noremap <silent> <buffer> <Plug>(FloodDefinition)     :FloodDefinition <CR>
+noremap <silent> <buffer> <Plug>(FloodImporters)      :FloodImporters <CR>
+noremap <silent> <buffer> <Plug>(FloodImports)        :FloodImports <CR>
+noremap <silent> <buffer> <Plug>(FloodStart)          :FloodStart <CR>
+noremap <silent> <buffer> <Plug>(FloodStatus)         :FloodStatus <CR>
+noremap <silent> <buffer> <Plug>(FloodStop)           :FloodStop <CR>
+noremap <silent> <buffer> <Plug>(FloodSuggest)        :FloodSuggest <CR>
+noremap <silent> <buffer> <Plug>(FloodVersion)        :FloodVersion <CR>
 
 let g:flood_enable_init_onstart = get(g:, 'flood_enable_init_onstart', 1)
 if g:flood_enable_init_onstart == 1

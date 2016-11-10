@@ -32,7 +32,7 @@ function! s:parse(errors)
       call add(outputs, {
             \ 'filename': expand('%t'),
             \ 'lnum': line,
-            \ 'col': start,
+            \ 'col': start == -1 ? 0 : start,
             \ 'vcol': 0,
             \ 'text': text,
             \ 'type': level
@@ -54,16 +54,24 @@ function! s:check_callback(ch, msg)
     endif
 
     let outputs = s:parse(responses['errors'])
+    call flood#log('check_callback')
     " Create quickfix via setqflist().
     call setqflist(outputs, 'r')
+    call flood#log('after setqflist')
     if len(outputs) > 0 && g:flood_enable_quickfix == 1
       cwindow
     else
       cclose
     endif
+    call flood#log('check_callback end')
   catch
     echomsg 'Flow server is not running.'
     echomsg a:msg
+  finally
+    try
+      call ch_close(a:ch)
+    catch
+    endtry
   endtry
 endfunction
 
@@ -74,12 +82,11 @@ function! flood#check#run() abort
   endif
 
   let file = expand('%:p')
-  let cmd = printf('%s check --json', flood#flowbin())
+  let cmd = printf('%s --json', flood#flowbin())
   let s:job = job_start(cmd, {
         \ 'callback': {c, m -> s:check_callback(c, m)},
-        \ 'in_io': 'buffer',
-        \ 'in_name': file
         \ })
+  return ''
 endfunction
 
 let &cpo = s:save_cpo
