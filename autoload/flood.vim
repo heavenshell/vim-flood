@@ -20,6 +20,7 @@ let g:flood_definition_split = get(g:, 'flood_definition_split', 0)
 let g:flood_suggest_window = get(g:, 'flood_suggest_window', 'topleft')
 " Async complete command.
 let g:flood_complete_async_command = get(g:, 'flood_complete_async_command', '<C-x><C-o> ')
+let g:flood_debug = get(g:, 'flood_debug', 1)
 
 function! s:detect_flowbin(srcpath)
   let flow = ''
@@ -74,6 +75,12 @@ function! flood#complete(findstart, base)
   return completions
 endfunction
 
+function! flood#log(msg)
+  if g:flood_debug == 1
+    echomsg printf('[Flood] %s', a:msg)
+  endif
+endfunction
+
 " Initialize plugin settings.
 function! flood#init() abort
   " Open quickfix window if error detect.
@@ -89,7 +96,6 @@ function! flood#init() abort
   endif
 
   if g:flood_complete_async == 1
-    echomsg g:flood_complete_async_command
     execute 'inoremap <buffer> ' . g:flood_complete_async_command . '<C-R>=flood#complete#async()<CR>'
 
     "inoremap <silent> <buffer> . .<C-R>=flood#complete#async()<CR>
