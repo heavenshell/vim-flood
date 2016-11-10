@@ -44,22 +44,27 @@ endfunction
 " Callback function for `flow check-contents`.
 " Create quickfix if error contains
 function! s:check_callback(msg)
-  let responses = json_decode(a:msg)
-  if responses['passed']
-    " No Errors. Clear quickfix then close window if exists.
-    call setqflist([], 'r')
-    cclose
-    return
-  endif
+  try
+    let responses = json_decode(a:msg)
+    if responses['passed']
+      " No Errors. Clear quickfix then close window if exists.
+      call setqflist([], 'r')
+      cclose
+      return
+    endif
 
-  let outputs = s:parse(responses['errors'])
-  " Create quickfix via setqflist().
-  call setqflist(outputs, 'r')
-  if len(outputs) > 0 && g:flood_enable_quickfix == 1
-    cwindow
-  else
-    cclose
-  endif
+    let outputs = s:parse(responses['errors'])
+    " Create quickfix via setqflist().
+    call setqflist(outputs, 'r')
+    if len(outputs) > 0 && g:flood_enable_quickfix == 1
+      cwindow
+    else
+      cclose
+    endif
+  catch
+    echomsg 'Flow server is not running.'
+    echomsg a:msg
+  endtry
 endfunction
 
 " Execute `flow check-contents` job.

@@ -24,14 +24,19 @@ function! s:parse(responses)
 endfunction
 
 function! s:imports_callback(msg)
-  " {"current/buffer.js":["use/a.js, use/b.js"]}
-  let responses = json_decode(a:msg)
-  let outputs = s:parse(responses)
+  try
+    " {"current/buffer.js":["use/a.js, use/b.js"]}
+    let responses = json_decode(a:msg)
+    let outputs = s:parse(responses)
 
-  call setloclist(0, outputs, 'r')
-  if len(outputs) > 0 && g:flood_enable_quickfix == 1
-    lwindow
-  endif
+    call setloclist(0, outputs, 'r')
+    if len(outputs) > 0 && g:flood_enable_quickfix == 1
+      lwindow
+    endif
+  catch
+    echomsg 'Flow server is not running.'
+    echomsg a:msg
+  endtry
 endfunction
 
 " Execute `flow get-imports --json index.js`.

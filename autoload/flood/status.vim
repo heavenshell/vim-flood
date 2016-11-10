@@ -10,10 +10,12 @@ set cpo&vim
 
 " Callback function for `flow status`.
 function! s:status_callback(msg)
-  let response = json_decode(a:msg)
   try
+    let response = json_decode(a:msg)
     echomsg printf('Flow server is running. Flow version is %s.', response['flowVersion'])
   catch
+    echomsg 'Flow server is not running.'
+    echomsg a:msg
   endtry
 endfunction
 

@@ -37,11 +37,16 @@ function! s:parse(msg)
 endfunction
 
 function! s:definition_callback(msg)
-  " JSON format is `{"path":"-","line":3,"endline":3,"start":10,"end":15}`.
-  let json = json_decode(a:msg)
-  let cmd = s:parse(json)
-  execute cmd
-  call cursor(json['line'], json['start'])
+  try
+    " JSON format is `{"path":"-","line":3,"endline":3,"start":10,"end":15}`.
+    let json = json_decode(a:msg)
+    let cmd = s:parse(json)
+    execute cmd
+    call cursor(json['line'], json['start'])
+  catch
+    echomsg 'Flow server is not running.'
+    echomsg a:msg
+  endtry
 endfunction
 
 " Execute `flow get-def foo.js 12 3`.

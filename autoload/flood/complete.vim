@@ -55,32 +55,37 @@ function! s:parse(result, input_word, async)
 endfunction
 
 function! s:complete_callback(msg)
-  let json = json_decode(a:msg)
-  let result = json['result']
-
   let completions = []
-  for v in result
-    " Flow returns current inputing word. So filter it.
-    let kind = 'v'
-    if v['type'] =~ '^(.*) =>'
-      let kind = 'm'
-    elseif v['type'] =~ '^[class:'
-      let kind = 'c'
-    endif
-    let entry = {'word': v['name'], 'kind': kind, 'menu': v['type']}
+  try
+    let json = json_decode(a:msg)
+    let result = json['result']
 
-    " Async completions currently not work.
-    " Sync completions is fast.
-    "if a:async == 1
-    if complete_check()
-      break
-    endif
-    call complete_add(entry)
-    "else
-    "  call add(completions, entry)
-    "endif
-  endfor
-  call complete(col('.'), completions)
+    for v in result
+      " Flow returns current inputing word. So filter it.
+      let kind = 'v'
+      if v['type'] =~ '^(.*) =>'
+        let kind = 'm'
+      elseif v['type'] =~ '^[class:'
+        let kind = 'c'
+      endif
+      let entry = {'word': v['name'], 'kind': kind, 'menu': v['type']}
+
+      " Async completions currently not work.
+      " Sync completions is fast.
+      "if a:async == 1
+      if complete_check()
+        break
+      endif
+      call complete_add(entry)
+      "else
+      "  call add(completions, entry)
+      "endif
+    endfor
+    call complete(col('.'), completions)
+  catch
+    echomsg 'Flow server is not running.'
+    echomsg a:msg
+  endtry
 
   return completions
 endfunction

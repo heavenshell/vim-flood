@@ -10,7 +10,6 @@ set cpo&vim
 
 " Callback function for `flow start`.
 function! s:start_callback(msg)
-  echomsg a:msg
   " {"pid":"38605","log_file":"/path/to/flow.log"}
   try
     let response = json_decode(a:msg)
