@@ -17,6 +17,7 @@ function! flood#suggest#run() abort
     call job_stop(s:job)
   endif
 
+  " TODO use win_getid()
   let winnum = bufwinnr(bufnr('^flow-suggest$'))
   if winnum != -1
     if winnum != bufwinnr('%')
