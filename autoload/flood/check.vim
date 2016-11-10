@@ -43,7 +43,7 @@ endfunction
 
 " Callback function for `flow check-contents`.
 " Create quickfix if error contains
-function! s:check_callback(msg)
+function! s:check_callback(ch, msg)
   try
     let responses = json_decode(a:msg)
     if responses['passed']
@@ -76,7 +76,7 @@ function! flood#check#run() abort
   let file = expand('%:p')
   let cmd = printf('%s check-contents --json', flood#flowbin())
   let s:job = job_start(cmd, {
-        \ 'callback': {c, m -> s:check_callback(m)},
+        \ 'callback': {c, m -> s:check_callback(c, m)},
         \ 'in_io': 'buffer',
         \ 'in_name': file
         \ })

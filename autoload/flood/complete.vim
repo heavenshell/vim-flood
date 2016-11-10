@@ -39,29 +39,20 @@ function! s:parse(result, input_word, async)
     endif
     let entry = {'word': v['name'], 'kind': kind, 'menu': v['type']}
 
-    " Async completions currently not work.
-    " Sync completions is fast.
-    if a:async == 1
-      if complete_check()
-        break
-      endif
-      call complete_add(entry)
-    else
-      call add(completions, entry)
-    endif
+    call add(completions, entry)
   endfor
 
   return completions
 endfunction
 
-function! s:complete_callback(msg)
+function! s:complete_callback(ch, msg)
+  call flood#log('flood#complete#complete_callback')
   let completions = []
   try
     let json = json_decode(a:msg)
     let result = json['result']
 
     for v in result
-      " Flow returns current inputing word. So filter it.
       let kind = 'v'
       if v['type'] =~ '^(.*) =>'
         let kind = 'm'
@@ -70,28 +61,24 @@ function! s:complete_callback(msg)
       endif
       let entry = {'word': v['name'], 'kind': kind, 'menu': v['type']}
 
-      " Async completions currently not work.
-      " Sync completions is fast.
-      "if a:async == 1
-      if complete_check()
-        break
-      endif
-      call complete_add(entry)
-      "else
-      "  call add(completions, entry)
-      "endif
+      call add(completions, entry)
     endfor
     call complete(col('.'), completions)
   catch
     echomsg 'Flow server is not running.'
     echomsg a:msg
+  finally
+    call ch_close(a:ch)
   endtry
 
   return completions
 endfunction
 
 function! flood#complete#async()
+  " Clear gabage on buffer.
+  redraw!
   if exists('s:job') && job_status(s:job) != 'stop'
+    call flood#log('flood#complete#async job ' . string(s:job))
     call job_stop(s:job)
   endif
 
@@ -107,11 +94,15 @@ function! flood#complete#async()
         \ offset
         \ )
 
+  call flood#log('flood#complete#async cmd is ' . cmd)
   let s:job = job_start(cmd, {
-        \ 'callback': {c, m -> s:complete_callback(m)},
+        \ 'callback': {c, m -> s:complete_callback(c, m)},
         \ 'in_io': 'buffer',
-        \ 'in_name': file
+        \ 'in_name': file,
+        \ 'timeout': 1000
         \ })
+
+  call flood#log(string(s:job))
   return ''
 endfunction
 
