@@ -68,7 +68,10 @@ function! s:complete_callback(ch, msg)
     echomsg 'Flow server is not running.'
     echomsg a:msg
   finally
-    call ch_close(a:ch)
+    try
+      call ch_close(a:ch)
+    catch
+    endtry
   endtry
 
   return completions
