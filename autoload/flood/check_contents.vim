@@ -1,4 +1,4 @@
-" File: flood#check.vim
+" File: flood#check_contents.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
 " Version:  0.1
 " WebPage:  http://github.com/heavenshell/vim-flood/
@@ -68,13 +68,13 @@ function! s:check_callback(ch, msg)
 endfunction
 
 " Execute `flow check-contents` job.
-function! flood#check#run() abort
+function! flood#check_contents#run() abort
   if exists('s:job') && job_status(s:job) != 'stop'
     call job_stop(s:job)
   endif
 
   let file = expand('%:p')
-  let cmd = printf('%s check --json', flood#flowbin())
+  let cmd = printf('%s check-contents --json', flood#flowbin())
   let s:job = job_start(cmd, {
         \ 'callback': {c, m -> s:check_callback(c, m)},
         \ 'in_io': 'buffer',
