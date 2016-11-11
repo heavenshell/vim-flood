@@ -52,7 +52,6 @@ endfunction
 " Omnifunction
 function! flood#complete(findstart, base)
   if g:flood_complete_async == 1
-    "call flood#complete#async(lines, a:base, current_line, offset)
     return a:findstart ? -3 : []
   endif
 
