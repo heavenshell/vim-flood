@@ -63,7 +63,8 @@ function! s:check_callback(ch, msg)
     endif
   catch
     echomsg 'Flow server is not running.'
-    echomsg a:msg
+    call flood#log(v:exception)
+    call flood#log(a:msg)
   endtry
 endfunction
 

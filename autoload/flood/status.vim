@@ -15,7 +15,8 @@ function! s:status_callback(msg)
     echomsg printf('Flow server is running. Flow version is %s.', response['flowVersion'])
   catch
     echomsg 'Flow server is not running.'
-    echomsg a:msg
+    call flood#log(v:exception)
+    call flood#log(a:msg)
   endtry
 endfunction
 

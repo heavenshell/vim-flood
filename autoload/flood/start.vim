@@ -15,7 +15,8 @@ function! s:start_callback(msg)
     let response = json_decode(a:msg)
     echomsg printf('Staring flow server pid is %s', response['pid'])
   catch
-    echomsg a:msg
+    call flood#log(v:exception)
+    call flood#log(a:msg)
   endtry
 endfunction
 

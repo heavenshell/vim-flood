@@ -45,7 +45,8 @@ function! s:definition_callback(msg)
     call cursor(json['line'], json['start'])
   catch
     echomsg 'Flow server is not running.'
-    echomsg a:msg
+    call flood#log(v:exception)
+    call flood#log(a:msg)
   endtry
 endfunction
 

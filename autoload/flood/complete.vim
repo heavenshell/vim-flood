@@ -66,7 +66,8 @@ function! s:complete_callback(ch, msg)
     call complete(col('.'), completions)
   catch
     echomsg 'Flow server is not running.'
-    echomsg a:msg
+    call flood#log(v:exception)
+    call flood#log(a:msg)
   finally
     try
       call ch_close(a:ch)
@@ -81,7 +82,6 @@ function! flood#complete#async()
   " Clear gabage on buffer.
   redraw!
   if exists('s:job') && job_status(s:job) != 'stop'
-    call flood#log('flood#complete#async job ' . string(s:job))
     call job_stop(s:job)
   endif
 

@@ -30,7 +30,7 @@ function! s:importers_callback(msg)
     endif
   catch
     echomsg 'Flow server is not running.'
-    echomsg a:msg
+    call flood#log(a:msg)
   endtry
 endfunction
 

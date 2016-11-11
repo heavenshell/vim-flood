@@ -13,12 +13,16 @@ function! s:parse(errors)
   for e in a:errors
     let text = ''
     let line = has_key(e, 'operation') ? e['operation']['line'] : -1
+    let path = has_key(e, 'operation') ? e['operation']['path'] : ''
     "let start = has_key(e, 'operation') ? e['operation']['start'] : -1
     let start = -1
     for message in e['message']
       let text = text . ' ' . message['descr']
       if line == -1
         let line = message['line']
+      endif
+      if path == ''
+        let path = message['path']
       endif
       if start == -1
         " Current file's error position
@@ -30,13 +34,14 @@ function! s:parse(errors)
 
     let level = e['level'] ==# 'error' ? 'E' : 'W'
     call add(outputs, {
-          \ 'filename': expand('%t'),
+          \ 'filename': path,
           \ 'lnum': line,
           \ 'col': start == -1 ? 0 : start,
           \ 'vcol': 0,
           \ 'text': text,
           \ 'type': level
           \})
+
   endfor
   return outputs
 endfunction
@@ -54,19 +59,17 @@ function! s:check_callback(ch, msg)
     endif
 
     let outputs = s:parse(responses['errors'])
-    call flood#log('check_callback')
     " Create quickfix via setqflist().
     call setqflist(outputs, 'r')
-    call flood#log('after setqflist')
     if len(outputs) > 0 && g:flood_enable_quickfix == 1
       cwindow
     else
       cclose
     endif
-    call flood#log('check_callback end')
   catch
     echomsg 'Flow server is not running.'
-    echomsg a:msg
+    call flood#log(v:exception)
+    call flood#log(a:msg)
   finally
     try
       call ch_close(a:ch)
@@ -81,12 +84,10 @@ function! flood#check#run() abort
     call job_stop(s:job)
   endif
 
-  let file = expand('%:p')
   let cmd = printf('%s --json', flood#flowbin())
   let s:job = job_start(cmd, {
         \ 'callback': {c, m -> s:check_callback(c, m)},
         \ })
-  return ''
 endfunction
 
 let &cpo = s:save_cpo
