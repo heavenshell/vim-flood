@@ -11,32 +11,32 @@ set cpo&vim
 function! s:parse(errors)
   let outputs = []
   for e in a:errors
-      let text = ''
-      let line = has_key(e, 'operation') ? e['operation']['line'] : -1
-      "let start = has_key(e, 'operation') ? e['operation']['start'] : -1
-      let start = -1
-      for message in e['message']
-        let text = text . ' ' . message['descr']
-        if line == -1
-          let line = message['line']
+    let text = ''
+    let line = has_key(e, 'operation') ? e['operation']['line'] : -1
+    "let start = has_key(e, 'operation') ? e['operation']['start'] : -1
+    let start = -1
+    for message in e['message']
+      let text = text . ' ' . message['descr']
+      if line == -1
+        let line = message['line']
+      endif
+      if start == -1
+        " Current file's error position
+        if message['path'] == '-'
+          let start = message['start']
         endif
-        if start == -1
-          " Current file's error position
-          if message['path'] == '-'
-            let start = message['start']
-          endif
-        endif
-      endfor
+      endif
+    endfor
 
-      let level = e['level'] ==# 'error' ? 'E' : 'W'
-      call add(outputs, {
-            \ 'filename': expand('%t'),
-            \ 'lnum': line,
-            \ 'col': start == -1 ? 0 : start,
-            \ 'vcol': 0,
-            \ 'text': text,
-            \ 'type': level
-            \})
+    let level = e['level'] ==# 'error' ? 'E' : 'W'
+    call add(outputs, {
+          \ 'filename': expand('%t'),
+          \ 'lnum': line,
+          \ 'col': start == -1 ? 0 : start,
+          \ 'vcol': 0,
+          \ 'text': text,
+          \ 'type': level
+          \})
   endfor
   return outputs
 endfunction
