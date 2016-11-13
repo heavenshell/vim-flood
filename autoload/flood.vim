@@ -1,6 +1,5 @@
 " File: flood.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
-" Version:  0.1
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
@@ -13,14 +12,15 @@ let g:flood_flow_bin = get(g:, 'flood_flow_bin', '')
 " Enable open quickfix.
 let g:flood_enable_quickfix = get(g:, 'flood_enable_quickfix', 1)
 " Currently, sync completions supported only.
-let g:flood_complete_async = get(g:, 'flood_complete_async', 1)
+let g:flood_complete_async = get(g:, 'flood_complete_async', 0)
 " Jump definition with `:edit`, `:split', `:vsplit', `:tabedit`.
 let g:flood_definition_split = get(g:, 'flood_definition_split', 0)
-" Open suggest result at ''
+" Open suggest result at 'topleft'
 let g:flood_suggest_window = get(g:, 'flood_suggest_window', 'topleft')
 " Async complete command.
-let g:flood_complete_async_command = get(g:, 'flood_complete_async_command', '<C-x><C-o> ')
-let g:flood_debug = get(g:, 'flood_debug', 1)
+let g:flood_complete_async_popup_on_dot = get(g:, 'flood_complete_async_popup_on_dot ', 0)
+" Show log.
+let g:flood_debug = get(g:, 'flood_debug', 0)
 
 function! s:detect_flowbin(srcpath)
   let flow = ''
@@ -51,7 +51,9 @@ endfunction
 
 " Omnifunction
 function! flood#complete(findstart, base)
+  let s:complete_base = a:base
   if g:flood_complete_async == 1
+    " -3 will cancel complete
     return a:findstart ? -3 : []
   endif
 
@@ -76,7 +78,7 @@ endfunction
 
 function! flood#log(msg)
   if g:flood_debug == 1
-    echomsg printf('[Flood] %s', a:msg)
+    echomsg printf('[Flood] %s', string(a:msg))
   endif
 endfunction
 
@@ -95,9 +97,10 @@ function! flood#init() abort
   endif
 
   if g:flood_complete_async == 1
-    execute 'inoremap <buffer> ' . g:flood_complete_async_command . '<C-R>=flood#complete#async()<CR>'
-
-    "inoremap <silent> <buffer> . .<C-R>=flood#complete#async()<CR>
+    execute 'inoremap <buffer> <C-x><C-o> <C-R>=flood#complete#async()<CR>'
+    if g:flood_complete_async_popup_on_dot == 1
+      execute 'inoremap <buffer> . .<C-R>=flood#complete#async()<CR>'
+    endif
   else
     setlocal omnifunc=flood#complete
   endif

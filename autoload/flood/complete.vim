@@ -1,6 +1,5 @@
 " File: flood#complete.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
-" Version:  0.1
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
@@ -20,14 +19,54 @@ function! s:insert_autocomplete_token(buffer, base, line, offset)
   return join(lines, "\n")
 endfunction
 
+function! s:detect_input_offset(line)
+  " Find `dot` positon. Insert selected candidate after `dot`.
+  let offset = strridx(a:line, '.')
+  if offset != -1
+    " `dot` found.
+    return offset + 1
+  endif
+
+  " If `dot` is not found. There were no `dot` in line.
+  " Maybe user input something like `wor<C-x><C-o>`.
+  " Insert selected candidate after `space'.
+  let offset = strridx(a:line, ' ')
+  if offset != -1
+    return offset + 1
+  endif
+
+  " Same as `tab`.
+  let offset = strridx(a:line, '\t')
+  if offset != -1
+    return offset + 1
+  endif
+
+  " Maybe offset is ahead of the line.
+  return 0
+endfunction
+
+function! s:detect_base(line, col)
+  let offset = s:detect_input_offset(a:line)
+  let base = strpart(a:line, offset, a:col)
+  return base
+endfunction
+
 " Parse autocomplete and create candiates.
-function! s:parse(result, input_word, async)
+function! s:create_candidate(result, input_word)
   " Following code is from vim-flow a lot.
   " `https://github.com/flowtype/vim-flow/blob/master/autoload/flowcomplete.vim`
   let completions = []
+  let candidates = [] " For avoid dupricat candidate.
   for v in a:result
-    " Flow returns current inputing word. So filter it.
-    if stridx(v['name'], a:input_word) != 0
+    " Flow autocomplete' result content current inputing word too.
+    " So filter it.
+    if a:input_word != ''
+      if stridx(v['name'], a:input_word) != 0
+        continue
+      endif
+    endif
+    " If candidate word already exists, skip it.
+    if index(candidates, v['name']) >= 0
       continue
     endif
 
@@ -40,30 +79,49 @@ function! s:parse(result, input_word, async)
     let entry = {'word': v['name'], 'kind': kind, 'menu': v['type']}
 
     call add(completions, entry)
+    call add(candidates, v['name'])
   endfor
 
   return completions
 endfunction
 
-function! s:complete_callback(ch, msg)
-  call flood#log('flood#complete#complete_callback')
+function! s:complete_callback(ch, msg, input_word, offset)
+  " Following code is from vim-flow a lot.
+  " `https://github.com/flowtype/vim-flow/blob/master/autoload/flowcomplete.vim`
   let completions = []
   try
     let json = json_decode(a:msg)
     let result = json['result']
 
-    for v in result
-      let kind = 'v'
-      if v['type'] =~ '^(.*) =>'
-        let kind = 'm'
-      elseif v['type'] =~ '^[class:'
-        let kind = 'c'
-      endif
-      let entry = {'word': v['name'], 'kind': kind, 'menu': v['type']}
+    let completions = s:create_candidate(result, a:input_word)
 
-      call add(completions, entry)
-    endfor
-    call complete(col('.'), completions)
+    " completeopt's noinsert, noselect
+    let flg = 0
+    if len(completions) == 1
+      " completeopt's noselect and noinsert
+      let _completeopt = &completeopt
+      let pattern = '\(noinsert\|noselect\)'
+      let flg = &completeopt =~ pattern
+      if flg
+        let options = split(&completeopt, ',')
+        let option = ''
+        for o in options
+          if o == 'noselect' || o == 'noinsert'
+            continue
+          endif
+          let option = option . o
+        endfor
+        echomsg option
+        execute 'set completeopt=' . option
+      endif
+    endif
+
+    call complete(a:offset, completions)
+
+    " Restore completeopt.
+    if flg
+      execute 'set completeopt=' . _completeopt
+    endif
   catch
     echomsg 'Flow server is not running.'
     call flood#log(v:exception)
@@ -78,6 +136,7 @@ function! s:complete_callback(ch, msg)
   return completions
 endfunction
 
+" Async completion.
 function! flood#complete#async()
   " Clear gabage on buffer.
   redraw!
@@ -89,6 +148,13 @@ function! flood#complete#async()
   let offset = col('.')
   let current_path = expand('%p')
 
+  " Find `.` positon.
+  " Below is same as omnifunction's `a:base`.
+  let line = getline(current_line)
+  let base = s:detect_base(line, offset)
+  let start = s:detect_input_offset(line)
+  let start = start + 1
+
   let file = expand('%:p')
   let cmd = printf(
         \ '%s autocomplete --json %d %d',
@@ -97,29 +163,35 @@ function! flood#complete#async()
         \ offset
         \ )
 
-  call flood#log('flood#complete#async cmd is ' . cmd)
   let s:job = job_start(cmd, {
-        \ 'callback': {c, m -> s:complete_callback(c, m)},
+        \ 'callback': {c, m -> s:complete_callback(c, m, base, start)},
         \ 'in_io': 'buffer',
         \ 'in_name': file,
         \ 'timeout': 1000
         \ })
 
-  call flood#log(string(s:job))
   return ''
 endfunction
 
 " Execute `flow autocomplete --json` with magic token.
 function! flood#complete#sync(lines, base, current_line, offset)
+  " Clear gabage on buffer.
+  redraw!
   let buffer = s:insert_autocomplete_token(a:lines, a:base, a:current_line, a:offset)
   let current_path = expand('%p')
   let cmd = printf('%s autocomplete --json %s', flood#flowbin(), current_path)
-  let result = system(cmd, buffer)
-  let json = json_decode(result)
-  let result = json['result']
-  let async = 0
+  let completions = []
+  try
+    let result = system(cmd, buffer)
+    let json = json_decode(result)
+    let result = json['result']
 
-  return s:parse(result, a:base, async)
+    let completions = s:create_candidate(result, a:base)
+  catch
+    call flood#log(v:exception)
+  endtry
+
+  return completions
 endfunction
 
 let &cpo = s:save_cpo
