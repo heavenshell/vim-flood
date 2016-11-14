@@ -1,4 +1,4 @@
-" File: flood#check.vim
+" File: flood#check_contents.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
@@ -10,37 +10,32 @@ set cpo&vim
 function! s:parse(errors)
   let outputs = []
   for e in a:errors
-    let text = ''
-    let line = has_key(e, 'operation') ? e['operation']['line'] : -1
-    let path = has_key(e, 'operation') ? e['operation']['path'] : ''
-    "let start = has_key(e, 'operation') ? e['operation']['start'] : -1
-    let start = -1
-    for message in e['message']
-      let text = text . ' ' . message['descr']
-      if line == -1
-        let line = message['line']
-      endif
-      if path == ''
-        let path = message['path']
-      endif
-      if start == -1
-        " Current file's error position
-        if message['path'] == '-'
-          let start = message['start']
+      let text = ''
+      let line = has_key(e, 'operation') ? e['operation']['line'] : -1
+      "let start = has_key(e, 'operation') ? e['operation']['start'] : -1
+      let start = -1
+      for message in e['message']
+        let text = text . ' ' . message['descr']
+        if line == -1
+          let line = message['line']
         endif
-      endif
-    endfor
+        if start == -1
+          " Current file's error position
+          if message['path'] == '-'
+            let start = message['start']
+          endif
+        endif
+      endfor
 
-    let level = e['level'] ==# 'error' ? 'E' : 'W'
-    call add(outputs, {
-          \ 'filename': path,
-          \ 'lnum': line,
-          \ 'col': start == -1 ? 0 : start,
-          \ 'vcol': 0,
-          \ 'text': text,
-          \ 'type': level
-          \})
-
+      let level = e['level'] ==# 'error' ? 'E' : 'W'
+      call add(outputs, {
+            \ 'filename': expand('%t'),
+            \ 'lnum': line,
+            \ 'col': start,
+            \ 'vcol': 0,
+            \ 'text': text,
+            \ 'type': level
+            \})
   endfor
   return outputs
 endfunction
@@ -69,23 +64,21 @@ function! s:check_callback(ch, msg)
     echomsg 'Flow server is not running.'
     call flood#log(v:exception)
     call flood#log(a:msg)
-  finally
-    try
-      call ch_close(a:ch)
-    catch
-    endtry
   endtry
 endfunction
 
 " Execute `flow check-contents` job.
-function! flood#check#run() abort
+function! flood#check_contents#run() abort
   if exists('s:job') && job_status(s:job) != 'stop'
     call job_stop(s:job)
   endif
 
-  let cmd = printf('%s --json', flood#flowbin())
+  let file = expand('%:p')
+  let cmd = printf('%s check-contents --json', flood#flowbin())
   let s:job = job_start(cmd, {
         \ 'callback': {c, m -> s:check_callback(c, m)},
+        \ 'in_io': 'buffer',
+        \ 'in_name': file
         \ })
 endfunction
 

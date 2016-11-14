@@ -1,6 +1,5 @@
 " File: flood#importers.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
-" Version:  0.1
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
@@ -19,14 +18,19 @@ function! s:parse(responses)
 endfunction
 
 function! s:importers_callback(msg)
-  " {"current/buffer.js":["use/a.js, use/b.js"]}
-  let responses = json_decode(a:msg)
-  let outputs = s:parse(responses)
+  try
+    " {"current/buffer.js":["use/a.js, use/b.js"]}
+    let responses = json_decode(a:msg)
+    let outputs = s:parse(responses)
 
-  call setloclist(0, outputs, 'r')
-  if len(outputs) > 0 && g:flood_enable_quickfix == 1
-    lwindow
-  endif
+    call setloclist(0, outputs, 'r')
+    if len(outputs) > 0 && g:flood_enable_quickfix == 1
+      lwindow
+    endif
+  catch
+    echomsg 'Flow server is not running.'
+    call flood#log(a:msg)
+  endtry
 endfunction
 
 " Execute `flow get-importers --json index.js`.

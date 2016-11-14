@@ -1,6 +1,5 @@
 " File: flood#version.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
-" Version:  0.1
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
@@ -20,6 +19,8 @@ function! s:version_callback(msg)
     let ver = s:parse(responses)
     echomsg printf('Flow version is %s.', ver)
   catch
+    echomsg 'Flow server is not running.'
+    echomsg a:msg
   endtry
 endfunction
 

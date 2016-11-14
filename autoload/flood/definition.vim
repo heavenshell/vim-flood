@@ -1,6 +1,5 @@
 " File: flood#definition.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
-" Version:  0.1
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
@@ -37,11 +36,17 @@ function! s:parse(msg)
 endfunction
 
 function! s:definition_callback(msg)
-  " JSON format is `{"path":"-","line":3,"endline":3,"start":10,"end":15}`.
-  let json = json_decode(a:msg)
-  let cmd = s:parse(json)
-  execute cmd
-  call cursor(json['line'], json['start'])
+  try
+    " JSON format is `{"path":"-","line":3,"endline":3,"start":10,"end":15}`.
+    let json = json_decode(a:msg)
+    let cmd = s:parse(json)
+    execute cmd
+    call cursor(json['line'], json['start'])
+  catch
+    echomsg 'Flow server is not running.'
+    call flood#log(v:exception)
+    call flood#log(a:msg)
+  endtry
 endfunction
 
 " Execute `flow get-def foo.js 12 3`.

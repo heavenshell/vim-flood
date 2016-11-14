@@ -1,6 +1,5 @@
 " File: flood#start.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
-" Version:  0.1
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
@@ -10,13 +9,13 @@ set cpo&vim
 
 " Callback function for `flow start`.
 function! s:start_callback(msg)
-  echomsg a:msg
   " {"pid":"38605","log_file":"/path/to/flow.log"}
   try
     let response = json_decode(a:msg)
     echomsg printf('Staring flow server pid is %s', response['pid'])
   catch
-    echomsg a:msg
+    call flood#log(v:exception)
+    call flood#log(a:msg)
   endtry
 endfunction
 

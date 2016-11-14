@@ -1,6 +1,5 @@
 " File: flood#suggest.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
-" Version:  0.1
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
@@ -17,6 +16,7 @@ function! flood#suggest#run() abort
     call job_stop(s:job)
   endif
 
+  " TODO use win_getid()
   let winnum = bufwinnr(bufnr('^flow-suggest$'))
   if winnum != -1
     if winnum != bufwinnr('%')

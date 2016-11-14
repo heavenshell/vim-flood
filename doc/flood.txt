@@ -1,6 +1,6 @@
 *flood*	Vim plguin for Flow.
 
-Version: 0.1.0
+Version: 0.2.0
 Author: Shinya Ohynagi <sohyanagi@gmail.com>
 Repository: http://github.com/heavenshell/vim-flood/
 License: BSD, see LICENSE for more details.
@@ -23,6 +23,9 @@ This plugin provides the following functions:
 
 + Queries autocompletion information
   Execute `$ flow autocomplete`
+
++ Run typechecker
+  Execute `$ flow check`
 
 + Run typechecker on contents
   Execute `$ flow check-contents`
@@ -87,7 +90,7 @@ g:flood_complete_async				*g:flood_complete_async*
 		Enable asyn complete.
 		Currently asyn complete is not supported
 
-		Default value is 0(Open automatically)
+		Default value is 0(Sync mode)
 
 g:flood_definition_split			*g:flood_definition_split*
 		Use `split`, `vsplit`, `tabedit` when jump to definition.
@@ -104,13 +107,22 @@ g:flood_suggest_window				*g:flood_suggest_window*
 
 		Default value is topleft.
 
-g:flood_enable_init_onstartena			*g:flood_enable_init_onstart*
+g:flood_enable_init_onstart			*g:flood_enable_init_onstart*
 		Execute initialize flood.vim settings.
 
 		Default value is 1(Do initialize).
 
+g:flood_complete_async_popup_on_dot	*g:flood_complete_async_popup_on_dot*
+		Show popup window when typing dot.
+		This variable only |g:flood_complete_async| is enabled.
+
+		Default value is 0(Not used).
+
 ==============================================================================
 CHANGELOG						*flood-changelog*
+2016-11-13
+- Async complete supported
+
 2016-11-05
 - First release
 
