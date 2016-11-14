@@ -18,7 +18,7 @@ let g:flood_definition_split = get(g:, 'flood_definition_split', 0)
 " Open suggest result at 'topleft'
 let g:flood_suggest_window = get(g:, 'flood_suggest_window', 'topleft')
 " Async complete command.
-let g:flood_complete_async_popup_on_dot = get(g:, 'flood_complete_async_popup_on_dot ', 0)
+let g:flood_complete_async_popup_on_dot = get(g:, 'flood_complete_async_popup_on_dot', 0)
 " Show log.
 let g:flood_debug = get(g:, 'flood_debug', 0)
 
