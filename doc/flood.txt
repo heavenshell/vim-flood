@@ -1,6 +1,6 @@
 *flood*	Vim plguin for Flow.
 
-Version: 0.2.0
+Version: 0.3.0
 Author: Shinya Ohynagi <sohyanagi@gmail.com>
 Repository: http://github.com/heavenshell/vim-flood/
 License: BSD, see LICENSE for more details.
@@ -24,10 +24,10 @@ This plugin provides the following functions:
 + Queries autocompletion information
   Execute `$ flow autocomplete`
 
-+ Run typechecker
-  Execute `$ flow check`
++ Run typechecker(whole project)
+  Execute `$ flow`
 
-+ Run typechecker on contents
++ Run typechecker(current buffer)
   Execute `$ flow check-contents`
 
 + Gets the definition location of a variable or property
@@ -49,10 +49,13 @@ This plugin provides the following functions:
   Execute `$ flow stop`
 
 + Shows type annotation suggestions for given files
-  Execute `$ flow status`
+  Execute `$ flow suggest`
+
++ Shows the type at a given file and position
+  Execute `$ flow type-at-pos`
 
 + Print version information
-  Execute `$ version`
+  Execute `$ flow version`
 
 ==============================================================================
 INSTALL							*flood-install*
@@ -60,8 +63,8 @@ INSTALL							*flood-install*
 Install the distributed files into Vim runtime directory which is usually
 ~/.vim/, or $HOME/vimfiles on Windows.
 
-If you install pathogen that provided from Tim Pope, you should extract the
-file into 'bundle' directory.
+If you use built in `package` , you should extract the
+file into '~/.vim/pack/*/start' directory.
 
 ==============================================================================
 TUTORIAL						*flood-tutorial*
@@ -118,8 +121,17 @@ g:flood_complete_async_popup_on_dot	*g:flood_complete_async_popup_on_dot*
 
 		Default value is 0(Not used).
 
+g:flood_set_omnifunc_auto			*g:flood_set_omnifunc_auto*
+		If enabed project contains `.flowconfig` execute
+		`setlocla omnifunc=flood#complete` automatically.
+
+		Default value is 1(Enabled).
+
 ==============================================================================
 CHANGELOG						*flood-changelog*
+2016-11-15
+- Support type-at-pos
+
 2016-11-13
 - Async complete supported
 

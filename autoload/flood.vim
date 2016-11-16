@@ -7,6 +7,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+" If `.flowconfig` detected, set `flood#complete` to `omnifunc`.
+let g:flood_set_omnifunc_auto = get(g:, 'flood_set_omnifunc_auto', 1)
 " If specific path is not set, use local flow.
 let g:flood_flow_bin = get(g:, 'flood_flow_bin', '')
 " Enable open quickfix.
@@ -82,6 +84,16 @@ function! flood#log(msg)
   endif
 endfunction
 
+function! flood#is_flow_project()
+  let current_path = expand('%:p')
+  let flowconfig = findfile('.flowconfig', current_path . ';')
+  if flowconfig == ''
+    return 0
+  endif
+
+  return 1
+endfunction
+
 " Initialize plugin settings.
 function! flood#init() abort
   " Open quickfix window if error detect.
@@ -101,8 +113,6 @@ function! flood#init() abort
     if g:flood_complete_async_popup_on_dot == 1
       execute 'inoremap <buffer> . .<C-R>=flood#complete#async()<CR>'
     endif
-  else
-    setlocal omnifunc=flood#complete
   endif
 endfunction
 

@@ -25,4 +25,4 @@ vim-flood is  plugin for Flow.
 - Version
   - Print version information
 - Local Node package
-  - vim-flood does not need flow global
+  - vim-flood does not need flow global insatalled

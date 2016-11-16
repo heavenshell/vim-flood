@@ -27,6 +27,7 @@ command! -buffer FloodStart         :call flood#start#run()
 command! -buffer FloodStatus        :call flood#status#run()
 command! -buffer FloodStop          :call flood#stop#run()
 command! -buffer FloodSuggest       :call flood#suggest#run()
+command! -buffer FloodTypeAtPos     :call flood#type_at_pos#run()
 command! -buffer FloodVersion       :call flood#version#run()
 
 noremap <silent> <buffer> <Plug>(FloodCheck)          :FloodCheck <CR>
@@ -38,6 +39,7 @@ noremap <silent> <buffer> <Plug>(FloodStart)          :FloodStart <CR>
 noremap <silent> <buffer> <Plug>(FloodStatus)         :FloodStatus <CR>
 noremap <silent> <buffer> <Plug>(FloodStop)           :FloodStop <CR>
 noremap <silent> <buffer> <Plug>(FloodSuggest)        :FloodSuggest <CR>
+noremap <silent> <buffer> <Plug>(FloodTypeAtPos)      :FloodTypeAtPos <CR>
 noremap <silent> <buffer> <Plug>(FloodVersion)        :FloodVersion <CR>
 
 let g:flood_enable_init_onstart = get(g:, 'flood_enable_init_onstart', 1)
