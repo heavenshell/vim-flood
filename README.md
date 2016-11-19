@@ -1,6 +1,6 @@
 # vim-flood
 
-vim-flood is  plugin for Flow.
+vim-flood is  plugin for [Facebook Flow](https://flowtype.org/).
 
 Autocompletion.
 
