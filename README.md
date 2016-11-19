@@ -2,12 +2,20 @@
 
 vim-flood is  plugin for Flow.
 
+Autocompletion.
+
+![Cmplete FlowType](./assets/vim-flood-complete.gif)
+
+Type check.
+
+![Type check](./assets/vim-flood-typecheck.gif)
+
 # Features
 
 - Autocompletion
   - omni-completion(Default)
   - async completion via Vim's `job` and `channel`
-- Check
+- Type check
   - Flow check
   - Flow content-check
 - Defeinition
@@ -18,6 +26,8 @@ vim-flood is  plugin for Flow.
   - Get names of all modules imported by one or more given modules
 - Start
   - Starts a Flow server
+- Status
+  - Flow server status
 - Stop
   - Stops a Flow server
 - Suggest
@@ -26,3 +36,7 @@ vim-flood is  plugin for Flow.
   - Print version information
 - Local Node package
   - vim-flood does not need flow global insatalled
+
+## License
+
+New BSD License
