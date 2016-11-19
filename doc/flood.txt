@@ -1,6 +1,6 @@
 *flood*	Vim plguin for Flow.
 
-Version: 0.3.0
+Version: 0.3.1
 Author: Shinya Ohynagi <sohyanagi@gmail.com>
 Repository: http://github.com/heavenshell/vim-flood/
 License: BSD, see LICENSE for more details.
@@ -129,6 +129,9 @@ g:flood_set_omnifunc_auto			*g:flood_set_omnifunc_auto*
 
 ==============================================================================
 CHANGELOG						*flood-changelog*
+2016-11-19
+- Fix QuickFix column positon
+
 2016-11-15
 - Support type-at-pos
 

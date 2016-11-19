@@ -24,10 +24,7 @@ function! s:parse(errors)
         let path = message['path']
       endif
       if start == -1
-        " Current file's error position
-        if message['path'] == '-'
-          let start = message['start']
-        endif
+        let start = message['start']
       endif
     endfor
 
