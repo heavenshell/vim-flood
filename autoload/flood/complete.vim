@@ -109,9 +109,12 @@ function! s:complete_callback(ch, msg, input_word, offset)
           if o == 'noselect' || o == 'noinsert'
             continue
           endif
-          let option = option . o
+          if option == ''
+            let option = option . o
+          else
+            let option = option . ','. o
+          endif
         endfor
-        echomsg option
         execute 'set completeopt=' . option
       endif
     endif

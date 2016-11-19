@@ -131,6 +131,7 @@ g:flood_set_omnifunc_auto			*g:flood_set_omnifunc_auto*
 CHANGELOG						*flood-changelog*
 2016-11-19
 - Fix QuickFix column positon
+- Fix completeopt bug
 
 2016-11-15
 - Support type-at-pos
