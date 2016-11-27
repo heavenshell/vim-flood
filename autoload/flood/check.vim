@@ -48,10 +48,12 @@ function! s:check_callback(ch, msg)
   try
     let responses = json_decode(a:msg)
     if responses['passed']
-      " No Errors. Clear quickfix then close window if exists.
-      call setqflist([], 'r')
-      cclose
-      return
+      if len(getqflist()) == 0
+        " No Errors. Clear quickfix then close window if exists.
+        call setqflist([], 'r')
+        cclose
+        return
+      endif
     endif
 
     let outputs = s:parse(responses['errors'])

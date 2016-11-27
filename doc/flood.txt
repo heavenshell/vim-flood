@@ -1,6 +1,6 @@
 *flood*	Vim plguin for Flow.
 
-Version: 0.3.1
+Version: 0.3.3
 Author: Shinya Ohynagi <sohyanagi@gmail.com>
 Repository: http://github.com/heavenshell/vim-flood/
 License: BSD, see LICENSE for more details.
@@ -86,6 +86,7 @@ g:flood_flow_bin				*g:flood_flow_bin*
 
 g:flood_enable_quickfix				*g:flood_enable_quickfix*
 		Enable to open QuickFix window automatically
+		(only flow project)
 
 		Default value is 1(Open automatically)
 
@@ -129,6 +130,12 @@ g:flood_set_omnifunc_auto			*g:flood_set_omnifunc_auto*
 
 ==============================================================================
 CHANGELOG						*flood-changelog*
+2016-11-27
+- Do not close QuickFix if other QuickFixList exists
+
+2016-11-26
+- Open QuickFix only flow project
+
 2016-11-19
 - Fix QuickFix column positon
 - Fix completeopt bug

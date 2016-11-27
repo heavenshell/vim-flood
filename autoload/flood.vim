@@ -23,6 +23,8 @@ let g:flood_suggest_window = get(g:, 'flood_suggest_window', 'topleft')
 let g:flood_complete_async_popup_on_dot = get(g:, 'flood_complete_async_popup_on_dot', 0)
 " Show log.
 let g:flood_debug = get(g:, 'flood_debug', 0)
+" Is project is Flow project?
+let s:is_flood_project = 0
 
 function! s:detect_flowbin(srcpath)
   let flow = ''
@@ -85,11 +87,15 @@ function! flood#log(msg)
 endfunction
 
 function! flood#is_flow_project()
+  if s:is_flood_project == 1
+    return 1
+  endif
   let current_path = expand('%:p')
   let flowconfig = findfile('.flowconfig', current_path . ';')
   if flowconfig == ''
     return 0
   endif
+  let s:is_flood_project = 1
 
   return 1
 endfunction
