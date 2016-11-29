@@ -23,6 +23,8 @@ let g:flood_suggest_window = get(g:, 'flood_suggest_window', 'topleft')
 let g:flood_complete_async_popup_on_dot = get(g:, 'flood_complete_async_popup_on_dot', 0)
 " Show log.
 let g:flood_debug = get(g:, 'flood_debug', 0)
+" Run FloodCheck on save.
+let g:flood_check_on_save = get(g:, 'flood_check_on_save', 1)
 " Is project is Flow project?
 let s:is_flood_project = 0
 
@@ -103,7 +105,7 @@ endfunction
 " Initialize plugin settings.
 function! flood#init() abort
   " Open quickfix window if error detect.
-  if g:flood_enable_quickfix == 1
+  if g:flood_check_on_save == 1
     augroup flood_enable_quickfix
       autocmd!
       autocmd BufWritePost *.js,*.jsx silent! call flood#check#run()

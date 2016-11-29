@@ -1,6 +1,6 @@
 *flood*	Vim plguin for Flow.
 
-Version: 0.3.3
+Version: 0.3.4
 Author: Shinya Ohynagi <sohyanagi@gmail.com>
 Repository: http://github.com/heavenshell/vim-flood/
 License: BSD, see LICENSE for more details.
@@ -123,13 +123,21 @@ g:flood_complete_async_popup_on_dot	*g:flood_complete_async_popup_on_dot*
 		Default value is 0(Not used).
 
 g:flood_set_omnifunc_auto			*g:flood_set_omnifunc_auto*
-		If enabed project contains `.flowconfig` execute
+		If enabed project contains `.flowconfig` execute.
 		`setlocla omnifunc=flood#complete` automatically.
+
+		Default value is 1(Enabled).
+
+g:flood_check_on_save				*g:flood_check_on_save*
+		Execute FloodCheck on save.
 
 		Default value is 1(Enabled).
 
 ==============================================================================
 CHANGELOG						*flood-changelog*
+2016-11-29
+- Change save on exec behavior
+
 2016-11-27
 - Do not close QuickFix if other QuickFixList exists
 

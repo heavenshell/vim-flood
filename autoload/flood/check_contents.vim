@@ -42,19 +42,21 @@ endfunction
 
 " Callback function for `flow check-contents`.
 " Create quickfix if error contains
-function! s:check_callback(ch, msg)
+function! s:check_callback(ch, msg, mode)
   try
     let responses = json_decode(a:msg)
-    if responses['passed']
-      " No Errors. Clear quickfix then close window if exists.
-      call setqflist([], 'r')
-      cclose
-      return
+    let outputs = s:parse(responses['errors'])
+    if responses['passed'] && len(getqflist()) == 0
+      if len(outputs) == 0
+        " No Errors. Clear quickfix then close window if exists.
+        call setqflist([], 'r')
+        cclose
+        return
+      endif
     endif
 
-    let outputs = s:parse(responses['errors'])
     " Create quickfix via setqflist().
-    call setqflist(outputs, 'r')
+    call setqflist(outputs, a:mode)
     if len(outputs) > 0 && g:flood_enable_quickfix == 1
       cwindow
     else
@@ -68,15 +70,16 @@ function! s:check_callback(ch, msg)
 endfunction
 
 " Execute `flow check-contents` job.
-function! flood#check_contents#run() abort
+function! flood#check_contents#run(...) abort
   if exists('s:job') && job_status(s:job) != 'stop'
     call job_stop(s:job)
   endif
+  let mode = a:0 > 0 ? a:1 : 'r'
 
   let file = expand('%:p')
   let cmd = printf('%s check-contents --json', flood#flowbin())
   let s:job = job_start(cmd, {
-        \ 'callback': {c, m -> s:check_callback(c, m)},
+        \ 'callback': {c, m -> s:check_callback(c, m, a:mode)},
         \ 'in_io': 'buffer',
         \ 'in_name': file
         \ })
