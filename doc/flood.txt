@@ -63,7 +63,7 @@ INSTALL							*flood-install*
 Install the distributed files into Vim runtime directory which is usually
 ~/.vim/, or $HOME/vimfiles on Windows.
 
-If you use built in `package` , you should extract the
+If you use built in `package`, you should extract the
 file into '~/.vim/pack/*/start' directory.
 
 ==============================================================================
