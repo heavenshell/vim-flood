@@ -1,6 +1,6 @@
 *flood*	Vim plguin for Flow.
 
-Version: 0.3.4
+Version: 0.4.0
 Author: Shinya Ohynagi <sohyanagi@gmail.com>
 Repository: http://github.com/heavenshell/vim-flood/
 License: BSD, see LICENSE for more details.
@@ -133,8 +133,21 @@ g:flood_check_on_save				*g:flood_check_on_save*
 
 		Default value is 1(Enabled).
 
+g:flood_callbacks				*g:flood_callbacks*
+		Hook points. User can inject various functions to frontier.
+
+		*before_init* :	Inject to flood#init() before called
+		*after_init* :	Inject to flood#init() after called
+		*before_run* :	Inject to flood#{check,check_contents}#run()
+				before called
+		*after_run* :	Inject to flood#{check,check_contents}#run()
+				after called
+
 ==============================================================================
 CHANGELOG						*flood-changelog*
+2017-01-01
+- Add callback feature
+
 2016-11-29
 - Change save on exec behavior
 
