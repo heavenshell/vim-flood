@@ -24,7 +24,7 @@ let g:flood_complete_async_popup_on_dot = get(g:, 'flood_complete_async_popup_on
 " Show log.
 let g:flood_debug = get(g:, 'flood_debug', 0)
 " Run FloodCheck on save.
-let g:flood_check_on_save = get(g:, 'flood_check_on_save', 1)
+let g:flood_callbacks = get(g:, 'flood_callbacks', {})
 " Is project is Flow project?
 let s:is_flood_project = 0
 
@@ -102,16 +102,16 @@ function! flood#is_flow_project()
   return 1
 endfunction
 
+function! flood#has_callback(name, callback_name) abort
+  if has_key(g:flood_callbacks, a:name) && has_key(g:flood_callbacks[a:name], a:callback_name)
+    return 1
+  endif
+  return 0
+endfunction
+
 " Initialize plugin settings.
 function! flood#init() abort
   " Open quickfix window if error detect.
-  if g:flood_check_on_save == 1
-    augroup flood_enable_quickfix
-      autocmd!
-      autocmd BufWritePost *.js,*.jsx silent! call flood#check#run()
-    augroup END
-  endif
-
   if !hasmapto('<Plug>(FloodDefinition)')
     map <buffer> <C-]> <Plug>(FloodDefinition)
   endif

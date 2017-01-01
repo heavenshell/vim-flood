@@ -33,7 +33,7 @@ function! s:parse(errors)
             \ 'lnum': line,
             \ 'col': start,
             \ 'vcol': 0,
-            \ 'text': text,
+            \ 'text': printf('[Flow] %s', text),
             \ 'type': level
             \})
   endfor
@@ -46,7 +46,7 @@ function! s:check_callback(ch, msg, mode)
   try
     let responses = json_decode(a:msg)
     let outputs = s:parse(responses['errors'])
-    if responses['passed'] && len(getqflist()) == 0
+    if g:flood_enable_quickfix == 1 && responses['passed'] && len(getqflist()) == 0
       if len(outputs) == 0
         " No Errors. Clear quickfix then close window if exists.
         call setqflist([], 'r')
@@ -59,13 +59,15 @@ function! s:check_callback(ch, msg, mode)
     call setqflist(outputs, a:mode)
     if len(outputs) > 0 && g:flood_enable_quickfix == 1
       cwindow
-    else
-      cclose
     endif
   catch
     echomsg 'Flow server is not running.'
     call flood#log(v:exception)
     call flood#log(a:msg)
+  finally
+    if frontier#has_callback('check_contents', 'after_run')
+      call g:frontier_callbacks['check_contents']['after_run']()
+    endif
   endtry
 endfunction
 
@@ -74,12 +76,15 @@ function! flood#check_contents#run(...) abort
   if exists('s:job') && job_status(s:job) != 'stop'
     call job_stop(s:job)
   endif
+  if frontier#has_callback('check_contents', 'before_run')
+    call g:frontier_callbacks['check_contents']['before_run']()
+  endif
   let mode = a:0 > 0 ? a:1 : 'r'
 
   let file = expand('%:p')
   let cmd = printf('%s check-contents --json', flood#flowbin())
   let s:job = job_start(cmd, {
-        \ 'callback': {c, m -> s:check_callback(c, m, a:mode)},
+        \ 'callback': {c, m -> s:check_callback(c, m, mode)},
         \ 'in_io': 'buffer',
         \ 'in_name': file
         \ })
