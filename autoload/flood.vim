@@ -12,7 +12,7 @@ let g:flood_set_omnifunc_auto = get(g:, 'flood_set_omnifunc_auto', 1)
 " If specific path is not set, use local flow.
 let g:flood_flow_bin = get(g:, 'flood_flow_bin', '')
 " Enable open quickfix.
-let g:flood_enable_quickfix = get(g:, 'flood_enable_quickfix', 1)
+let g:flood_enable_quickfix = get(g:, 'flood_enable_quickfix', 0)
 " Currently, sync completions supported only.
 let g:flood_complete_async = get(g:, 'flood_complete_async', 0)
 " Jump definition with `:edit`, `:split', `:vsplit', `:tabedit`.
