@@ -25,6 +25,8 @@ let g:flood_complete_async_popup_on_dot = get(g:, 'flood_complete_async_popup_on
 let g:flood_debug = get(g:, 'flood_debug', 0)
 " Run FloodCheck on save.
 let g:flood_callbacks = get(g:, 'flood_callbacks', {})
+" Run check, or check-content when @flow exists.
+let g:flood_detect_flow_statememt = get(g:, 'flood_detect_flow_statememt', 1)
 " Is project is Flow project?
 let s:is_flood_project = 0
 

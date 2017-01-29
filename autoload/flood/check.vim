@@ -86,6 +86,13 @@ function! flood#check#run(...) abort
     call g:frontier_callbacks['check']['before_run']()
   endif
 
+  let bufnum = bufnr('%')
+  let input = join(getbufline(bufnum, 1, '$'), "\n") . "\n"
+  if g:flood_detect_flow_statememt == 1 && input !~ '@flow'
+    call flood#log('`@flow` statement not found.')
+    return
+  endif
+
   let mode = a:0 > 0 ? a:1 : 'r'
   let cmd = printf('%s --json', flood#flowbin())
   let s:job = job_start(cmd, {

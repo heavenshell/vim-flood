@@ -1,6 +1,6 @@
 *flood*	Vim plguin for Flow.
 
-Version: 0.4.0
+Version: 0.5.0
 Author: Shinya Ohynagi <sohyanagi@gmail.com>
 Repository: http://github.com/heavenshell/vim-flood/
 License: BSD, see LICENSE for more details.
@@ -143,8 +143,17 @@ g:flood_callbacks				*g:flood_callbacks*
 		*after_run* :	Inject to flood#{check,check_contents}#run()
 				after called
 
+g:flood_detct_flow_statement			*g:flood_detct_flow_statement*
+		Execute check or check_contents if @flow statement exists.
+		If not exists, check or check_contents not execute.
+
+		Default value is 1(Enabled).
+
 ==============================================================================
 CHANGELOG						*flood-changelog*
+2017-01-29
+- Add g:flood_detct_flow_statement for check, check_contents
+
 2017-01-01
 - Add callback feature
 
