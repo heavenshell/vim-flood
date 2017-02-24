@@ -1,6 +1,6 @@
 *flood*	Vim plguin for Flow.
 
-Version: 0.5.0
+Version: 0.5.1
 Author: Shinya Ohynagi <sohyanagi@gmail.com>
 Repository: http://github.com/heavenshell/vim-flood/
 License: BSD, see LICENSE for more details.
@@ -151,6 +151,10 @@ g:flood_detct_flow_statement			*g:flood_detct_flow_statement*
 
 ==============================================================================
 CHANGELOG						*flood-changelog*
+2017-02-25
+- Fix to jump another file.
+  Definition jump did not work correctly.
+
 2017-01-29
 - Add g:flood_detct_flow_statement for check, check_contents
 
