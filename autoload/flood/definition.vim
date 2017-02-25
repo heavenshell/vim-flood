@@ -59,7 +59,7 @@ function! flood#definition#run()
   let file = expand('%p')
   let line = line('.')
   let offset = col('.')
-  let cmd = printf('%s get-def --json --path %s %d %d', bin, file line, offset)
+  let cmd = printf('%s get-def --json --path %s %d %d', bin, file, line, offset)
 
   let s:job = job_start(cmd, {
         \ 'callback': {c, m -> s:definition_callback(m)},
