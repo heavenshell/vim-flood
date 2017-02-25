@@ -1,6 +1,6 @@
 " File: flood.vim
 " Author: Shinya Ohyanagi <sohyanagi@gmail.com>
-" Version:  0.5.0
+" Version:  0.5.2
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
