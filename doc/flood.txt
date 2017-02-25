@@ -57,6 +57,10 @@ This plugin provides the following functions:
 + Print version information
   Execute `$ flow version`
 
+Note:
+  `flow find-module` is not supported use `FloodDefinition` instead.
+  `FloodDefinition` includes `flow find-module`'s function.
+
 ==============================================================================
 INSTALL							*flood-install*
 
