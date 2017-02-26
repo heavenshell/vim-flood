@@ -58,8 +58,8 @@ This plugin provides the following functions:
   Execute `$ flow version`
 
 Note:
-  `flow find-module` is not supported use `FloodDefinition` instead.
-  `FloodDefinition` includes `flow find-module`'s function.
+  `flow find-module` is not supported, use `FloodDefinition` instead.
+  `FloodDefinition` includes `flow find-module` function.
 
 ==============================================================================
 INSTALL							*flood-install*
@@ -160,6 +160,9 @@ CHANGELOG						*flood-changelog*
 - Fix FloodCheckContents message parse
 - Add left trim FloodCheckContents error message for remove space
 - Fix typos
+- Fix `FloodImports` output
+  - No chance to jump import file
+  - Flow only return current file's line number and column position
 
 2017-02-25
 - Fix to jump another file.
@@ -182,7 +185,7 @@ CHANGELOG						*flood-changelog*
 - Open QuickFix only flow project
 
 2016-11-19
-- Fix QuickFix column positon
+- Fix QuickFix column position
 - Fix completeopt bug
 
 2016-11-15

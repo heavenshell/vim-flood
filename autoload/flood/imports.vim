@@ -12,9 +12,10 @@ function! s:parse(responses)
   for k in keys(a:responses)
     for v in a:responses[k]['requirements']
       call add(outputs, {
-        \ 'filename': v['import'],
-        \ 'lnum': v['start'],
-        \ 'text': v['path']
+        \ 'filename': v['path'],
+        \ 'lnum': v['line'],
+        \ 'col': v['start'],
+        \ 'text': v['import']
         \ })
     endfor
   endfor
