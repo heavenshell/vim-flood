@@ -71,8 +71,8 @@ function! s:check_callback(ch, msg, mode)
     catch
     endtry
 
-    if frontier#has_callback('check', 'after_run')
-      call g:frontier_callbacks['check']['after_run']()
+    if flood#has_callback('check', 'after_run')
+      call g:flood_callbacks['check']['after_run']()
     endif
   endtry
 endfunction
@@ -82,8 +82,8 @@ function! flood#check#run(...) abort
   if exists('s:job') && job_status(s:job) != 'stop'
     call job_stop(s:job)
   endif
-  if frontier#has_callback('check', 'before_run')
-    call g:frontier_callbacks['check']['before_run']()
+  if flood#has_callback('check', 'before_run')
+    call g:flood_callbacks['check']['before_run']()
   endif
 
   let bufnum = bufnr('%')

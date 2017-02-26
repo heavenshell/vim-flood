@@ -20,12 +20,10 @@ function! s:parse(errors)
           let line = message['line']
         endif
         if start == -1
-          " Current file's error position
-          if message['path'] == '-'
-            let start = message['start']
-          endif
+          let start = message['start']
         endif
       endfor
+      let text = substitute(text, '^\s', '', 'g')
 
       let level = e['level'] ==# 'error' ? 'E' : 'W'
       call add(outputs, {
@@ -65,8 +63,8 @@ function! s:check_callback(ch, msg, mode)
     call flood#log(v:exception)
     call flood#log(a:msg)
   finally
-    if frontier#has_callback('check_contents', 'after_run')
-      call g:frontier_callbacks['check_contents']['after_run']()
+    if flood#has_callback('check_contents', 'after_run')
+      call g:flood_callbacks['check_contents']['after_run']()
     endif
   endtry
 endfunction
@@ -76,8 +74,8 @@ function! flood#check_contents#run(...) abort
   if exists('s:job') && job_status(s:job) != 'stop'
     call job_stop(s:job)
   endif
-  if frontier#has_callback('check_contents', 'before_run')
-    call g:frontier_callbacks['check_contents']['before_run']()
+  if flood#has_callback('check_contents', 'before_run')
+    call g:flood_callbacks['check_contents']['before_run']()
   endif
 
   let bufnum = bufnr('%')
@@ -90,7 +88,7 @@ function! flood#check_contents#run(...) abort
   let mode = a:0 > 0 ? a:1 : 'r'
 
   let file = expand('%:p')
-  let cmd = printf('%s check-contents --json', flood#flowbin())
+  let cmd = printf('%s check-contents %s --json', flood#flowbin(), file)
   let s:job = job_start(cmd, {
         \ 'callback': {c, m -> s:check_callback(c, m, mode)},
         \ 'in_io': 'buffer',

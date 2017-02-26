@@ -1,6 +1,6 @@
 *flood*	Vim plguin for Flow.
 
-Version: 0.5.2
+Version: 0.5.3
 Author: Shinya Ohynagi <sohyanagi@gmail.com>
 Repository: http://github.com/heavenshell/vim-flood/
 License: BSD, see LICENSE for more details.
@@ -138,7 +138,7 @@ g:flood_check_on_save				*g:flood_check_on_save*
 		Default value is 1(Enabled).
 
 g:flood_callbacks				*g:flood_callbacks*
-		Hook points. User can inject various functions to frontier.
+		Hook points. User can inject various functions to flood.
 
 		*before_init* :	Inject to flood#init() before called
 		*after_init* :	Inject to flood#init() after called
@@ -155,6 +155,12 @@ g:flood_detct_flow_statement			*g:flood_detct_flow_statement*
 
 ==============================================================================
 CHANGELOG						*flood-changelog*
+2017-02-26
+- Fix giving args to `flow check contents`
+- Fix FloodCheckContents message parse
+- Add left trim FloodCheckContents error message for remove space
+- Fix typos
+
 2017-02-25
 - Fix to jump another file.
   Definition jump did not work correctly.
