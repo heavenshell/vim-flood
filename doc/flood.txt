@@ -138,7 +138,7 @@ g:flood_check_on_save				*g:flood_check_on_save*
 		Default value is 1(Enabled).
 
 g:flood_callbacks				*g:flood_callbacks*
-		Hook points. User can inject various functions to frontier.
+		Hook points. User can inject various functions to flood.
 
 		*before_init* :	Inject to flood#init() before called
 		*after_init* :	Inject to flood#init() after called
@@ -159,6 +159,7 @@ CHANGELOG						*flood-changelog*
 - Fix giving args to `flow check contents`
 - Fix FloodCheckContents message parse
 - Add left trim FloodCheckContents error message for remove space
+- Fix typos
 
 2017-02-25
 - Fix to jump another file.
