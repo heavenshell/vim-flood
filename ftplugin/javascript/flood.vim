@@ -13,7 +13,7 @@ if get(b:, 'loaded_flood')
 endif
 
 " version check
-if !has('channel') || !has('job')
+if !has('nvim') && (!has('channel') || !has('job'))
   echoerr '+channel and +job are required for flood.vim'
   finish
 endif
