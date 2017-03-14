@@ -45,9 +45,21 @@ endfunction
 
 " Callback function for `flow check-contents`.
 " Create quickfix if error contains
-function! s:check_callback(msg, mode) dict
-  let responses = json_decode(a:msg)
+function! s:check_callback(msg, mode)
+  try
+    call append(line('$'), a:msg)
+    let responses = json_decode(a:msg)
+  catch
+    call append(line('$'), v:exception)
+  finally
+  endtry
+
+  call append(line('$'), responses['errors'])
   let outputs = s:parse(responses['errors'])
+
+  call append(line('$'), 'flood_enable_quickfix: ' . g:flood_enable_quickfix)
+  call append(line('$'), 'passed: ' . responses['passed'])
+
   if g:flood_enable_quickfix == 1 && responses['passed'] && len(getqflist()) == 0
     if len(outputs) == 0
       " No Errors. Clear quickfix then close window if exists.
@@ -71,14 +83,29 @@ function! s:after_check_callback()
   endif
 endfunction
 
+let g:chunks = {}
+
 function! s:neovim_job_handler(job_id, data, event) dict
-  if a:job_id == s:job_id
+  if a:event == 'stdout'
+    if !has_key(g:chunks, a:job_id)
+      let g:chunks[a:job_id] = []
+    endif
+
+    call add(g:chunks[a:job_id], a:data)
+  elseif a:event == 'exit'
     try
-      call s:check_callback(a:data, self.mode)
+      let msg = join(remove(g:chunks, a:job_id))
+      call s:check_callback(msg, self.mode)
     catch
     finally
       call s:after_check_callback()
     endtry
+  else
+    call flood#log(a:data)
+
+    if has_key(g:chunks, a:job_id)
+      remove(g:chunks, a:job_id)
+    endif
   endif
 endfunction
 
@@ -98,7 +125,7 @@ endfunction
 
 " Execute `flow check-contents` job.
 function! flood#check#run(...) abort
-  if exists('s:job_status') && s:job_status != 'stop'
+  if exists('s:job') && job_status(s:job) != 'stop'
     call jobstop(s:job_id)
   endif
   if flood#has_callback('check', 'before_run')
@@ -117,8 +144,10 @@ function! flood#check#run(...) abort
 
   if has('nvim')
     let s:job_id = jobstart(cmd, {
-          \ 'mode': mode
-          \ 'on_stdout': function('s:neovim_job_handler')
+          \ 'mode': mode,
+          \ 'on_stdout': function('s:neovim_job_handler'),
+          \ 'on_stderr': function('s:neovim_job_handler'),
+          \ 'on_exit': function('s:neovim_job_handler')
           \ })
   else
     let s:job = job_start(cmd, {
