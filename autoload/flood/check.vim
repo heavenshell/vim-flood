@@ -126,7 +126,7 @@ endfunction
 " Execute `flow check-contents` job.
 function! flood#check#run(...) abort
   if exists('s:job') && job_status(s:job) != 'stop'
-    call jobstop(s:job_id)
+    call job_stop(s:job)
   endif
   if flood#has_callback('check', 'before_run')
     call g:flood_callbacks['check']['before_run']()
