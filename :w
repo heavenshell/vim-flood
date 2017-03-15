@@ -46,8 +46,23 @@ endfunction
 " Callback function for `flow check-contents`.
 " Create quickfix if error contains
 function! s:check_callback(msg, mode)
-  let responses = json_decode(a:msg)
+  try
+    call append(line('$'), '=====>')
+    let responses = json_decode(a:msg)
+    call append(line('$'), '=====>>')
+    call append(line('$'), responses)
+  catch
+    call append(line('$'), v:exception)
+  finally
+  endtry
+
+  call append(line('$'), '=====')
+  call append(line('$'), responses['errors'])
   let outputs = s:parse(responses['errors'])
+  call append(line('$'), outputs)
+
+  call append(line('$'), 'flood_enable_quickfix: ' . g:flood_enable_quickfix)
+  call append(line('$'), 'passed: ' . responses['passed'])
 
   if g:flood_enable_quickfix == 1 && responses['passed'] && len(getqflist()) == 0
     if len(outputs) == 0
@@ -80,11 +95,26 @@ function! s:neovim_job_handler(job_id, data, event) dict
       let g:chunks[a:job_id] = []
     endif
 
-    call extend(g:chunks[a:job_id], a:data)
+    call add(g:chunks[a:job_id], a:data)
   elseif a:event == 'exit'
     try
-      let msg = join(remove(g:chunks, a:job_id))
-      call s:check_callback(msg, self.mode)
+      let msg = remove(g:chunks, a:job_id)
+      call append(line('$'), '----->')
+      call append(line('$'), type(msg))
+      call append(line('$'), len(msg))
+      call append(line('$'), type(msg[0]))
+      call append(line('$'), len(msg[0]))
+      call append(line('$'), type(msg[1]))
+      call append(line('$'), len(msg[1]))
+      call append(line('$'), type(msg[2]))
+      call append(line('$'), len(msg[2]))
+      call append(line('$'), '-----0>')
+      call append(line('$'), msg[0])
+      call append(line('$'), '-----1>')
+      call append(line('$'), msg[1])
+      call append(line('$'), '-----2>')
+      call append(line('$'), msg[2])
+      call s:check_callback(msg[0], self.mode)
     catch
     finally
       call s:after_check_callback()
@@ -129,6 +159,7 @@ function! flood#check#run(...) abort
   endif
 
   let mode = a:0 > 0 ? a:1 : 'r'
+  " let cmd = printf('%s --json', flood#flowbin())
   let cmd = [flood#flowbin(), '--json']
 
   if has('nvim')
@@ -139,7 +170,7 @@ function! flood#check#run(...) abort
           \ 'on_exit': function('s:neovim_job_handler')
           \ })
   else
-    let s:job = job_start(join(cmd, ' '), {
+    let s:job = job_start(cmd, {
           \ 'callback': {c, m -> s:vim_job_handler(c, m, mode)},
           \ })
   endif
