@@ -45,25 +45,62 @@ endfunction
 
 " Callback function for `flow check-contents`.
 " Create quickfix if error contains
-function! s:check_callback(ch, msg, mode)
-  try
-    let responses = json_decode(a:msg)
-    let outputs = s:parse(responses['errors'])
-    if g:flood_enable_quickfix == 1 && responses['passed'] && len(getqflist()) == 0
-      if len(outputs) == 0
-        " No Errors. Clear quickfix then close window if exists.
-        call setqflist([], 'r')
-        cclose
-        return
-      endif
+function! s:check_callback(msg, mode)
+  let responses = json_decode(a:msg)
+  let outputs = s:parse(responses['errors'])
+
+  if g:flood_enable_quickfix == 1 && responses['passed'] && len(getqflist()) == 0
+    if len(outputs) == 0
+      " No Errors. Clear quickfix then close window if exists.
+      call setqflist([], 'r')
+      cclose
+      return
+    endif
+  endif
+
+  " Create quickfix via setqflist().
+  " If quickfix mode is 'a', add outputs to existing quickfix list.
+  call setqflist(outputs, a:mode)
+  if len(outputs) > 0 && g:flood_enable_quickfix == 1
+    cwindow
+  endif
+endfunction
+
+function! s:after_check_callback()
+  if flood#has_callback('check', 'after_run')
+    call g:flood_callbacks['check']['after_run']()
+  endif
+endfunction
+
+let g:chunks = {}
+
+function! s:neovim_job_handler(job_id, data, event) dict
+  if a:event == 'stdout'
+    if !has_key(g:chunks, a:job_id)
+      let g:chunks[a:job_id] = []
     endif
 
-    " Create quickfix via setqflist().
-    " If quickfix mode is 'a', add outputs to existing quickfix list.
-    call setqflist(outputs, a:mode)
-    if len(outputs) > 0 && g:flood_enable_quickfix == 1
-      cwindow
+    call extend(g:chunks[a:job_id], a:data)
+  elseif a:event == 'exit'
+    try
+      let msg = join(remove(g:chunks, a:job_id))
+      call s:check_callback(msg, self.mode)
+    catch
+    finally
+      call s:after_check_callback()
+    endtry
+  else
+    call flood#log(a:data)
+
+    if has_key(g:chunks, a:job_id)
+      remove(g:chunks, a:job_id)
     endif
+  endif
+endfunction
+
+function! s:vim_job_handler(ch, msg, mode)
+  try
+    call s:check_callback(a:msg, a:mode)
   catch
   finally
     try
@@ -71,9 +108,7 @@ function! s:check_callback(ch, msg, mode)
     catch
     endtry
 
-    if flood#has_callback('check', 'after_run')
-      call g:flood_callbacks['check']['after_run']()
-    endif
+    call s:after_check_callback()
   endtry
 endfunction
 
@@ -94,10 +129,20 @@ function! flood#check#run(...) abort
   endif
 
   let mode = a:0 > 0 ? a:1 : 'r'
-  let cmd = printf('%s --json', flood#flowbin())
-  let s:job = job_start(cmd, {
-        \ 'callback': {c, m -> s:check_callback(c, m, mode)},
-        \ })
+  let cmd = [flood#flowbin(), '--json']
+
+  if has('nvim')
+    let s:job_id = jobstart(cmd, {
+          \ 'mode': mode,
+          \ 'on_stdout': function('s:neovim_job_handler'),
+          \ 'on_stderr': function('s:neovim_job_handler'),
+          \ 'on_exit': function('s:neovim_job_handler')
+          \ })
+  else
+    let s:job = job_start(join(cmd, ' '), {
+          \ 'callback': {c, m -> s:vim_job_handler(c, m, mode)},
+          \ })
+  endif
 endfunction
 
 let &cpo = s:save_cpo

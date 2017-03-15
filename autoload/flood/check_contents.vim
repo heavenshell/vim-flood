@@ -40,7 +40,7 @@ endfunction
 
 " Callback function for `flow check-contents`.
 " Create quickfix if error contains
-function! s:check_callback(ch, msg, mode)
+function! s:check_callback(msg, mode)
   try
     let responses = json_decode(a:msg)
     let outputs = s:parse(responses['errors'])
@@ -69,6 +69,16 @@ function! s:check_callback(ch, msg, mode)
   endtry
 endfunction
 
+function! s:neovim_job_handler(job_id, data, event) dict
+  if a:job_id == s:job_id
+    call s:check_callback(a:data, self.mode)
+  endif
+endfunction
+
+function! s:vim_job_handler(ch, msg, mode)
+  call s:check_callback(a:msg, a:mode)
+endfunction
+
 " Execute `flow check-contents` job.
 function! flood#check_contents#run(...) abort
   if exists('s:job') && job_status(s:job) != 'stop'
@@ -89,11 +99,21 @@ function! flood#check_contents#run(...) abort
 
   let file = expand('%:p')
   let cmd = printf('%s check-contents %s --json', flood#flowbin(), file)
-  let s:job = job_start(cmd, {
-        \ 'callback': {c, m -> s:check_callback(c, m, mode)},
-        \ 'in_io': 'buffer',
-        \ 'in_name': file
-        \ })
+
+  if has('nvim')
+    let s:job_id = jobstart(cmd, {
+          \ 'mode': mode,
+          \ 'on_stdout': function('s:neovim_job_handler')
+          \ })
+
+    jobsend(s:job_id, getbufline(bufnum, 1, '$'))
+  else
+    let s:job = job_start(cmd, {
+          \ 'callback': {c, m -> s:vim_job_handler(c, m, mode)},
+          \ 'in_io': 'buffer',
+          \ 'in_name': file
+          \ })
+  endif
 endfunction
 
 let &cpo = s:save_cpo
