@@ -7,6 +7,12 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:run_callback(name)
+  if flood#has_callback('check_contents', a:name)
+    call g:flood_callbacks['check_contents'][a:name]()
+  endif
+endfunction
+
 function! s:parse(errors)
   let outputs = []
   for e in a:errors
@@ -63,9 +69,7 @@ function! s:check_callback(ch, msg, mode)
     call flood#log(v:exception)
     call flood#log(a:msg)
   finally
-    if flood#has_callback('check_contents', 'after_run')
-      call g:flood_callbacks['check_contents']['after_run']()
-    endif
+    call s:run_callback('check_contents')
   endtry
 endfunction
 
@@ -74,9 +78,7 @@ function! flood#check_contents#run(...) abort
   if exists('s:job') && job_status(s:job) != 'stop'
     call job_stop(s:job)
   endif
-  if flood#has_callback('check_contents', 'before_run')
-    call g:flood_callbacks['check_contents']['before_run']()
-  endif
+  call s:run_callback('check_contents')
 
   let bufnum = bufnr('%')
   let input = join(getbufline(bufnum, 1, '$'), "\n") . "\n"
