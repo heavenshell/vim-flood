@@ -20,26 +20,36 @@ function! s:parse(errors)
       let line = has_key(e, 'operation') ? e['operation']['line'] : -1
       "let start = has_key(e, 'operation') ? e['operation']['start'] : -1
       let start = -1
+      let path = ''
+      let _messages = []
       for message in e['message']
+        if message['context'] == 'v:null'
+          continue
+        endif
         let text = text . ' ' . message['descr']
-        if line == -1
-          let line = message['line']
+        let line = message['line']
+        let start = message['start']
+        if has_key(message, 'loc')
+          let path = message['loc']['source']
+        else
+          let path = message['path']
         endif
-        if start == -1
-          let start = message['start']
-        endif
-      endfor
-      let text = substitute(text, '^\s', '', 'g')
 
+        call add(_messages, { 'text': text, 'line': line, 'start': start, 'path': path })
+      endfor
+      "" expand('%t'),
       let level = e['level'] ==# 'error' ? 'E' : 'W'
-      call add(outputs, {
-            \ 'filename': expand('%t'),
-            \ 'lnum': line,
-            \ 'col': start,
-            \ 'vcol': 0,
-            \ 'text': printf('[Flow] %s', text),
-            \ 'type': level
-            \})
+      for e in _messages
+        let text = substitute(text, '^\s', '', 'g')
+        call add(outputs, {
+              \ 'filename': e['path'],
+              \ 'lnum': e['line'],
+              \ 'col': e['start'],
+              \ 'vcol': 0,
+              \ 'text': printf('[Flow] %s', e['text']),
+              \ 'type': level
+              \})
+      endfor
   endfor
   return outputs
 endfunction
@@ -74,7 +84,7 @@ function! s:check_callback(ch, msg, mode)
 endfunction
 
 " Execute `flow check-contents` job.
-function! flood#check_contents#run(...) abort
+function! flood#check_contents#run(...)
   if exists('s:job') && job_status(s:job) != 'stop'
     call job_stop(s:job)
   endif
