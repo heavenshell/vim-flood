@@ -7,6 +7,9 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! s:parse(msg)
+  if !has_key(a:msg, 'path')
+    return ''
+  endif
   let mode = 'edit'
   if g:flood_definition_split == 0
     " Do edit
@@ -40,10 +43,14 @@ function! s:definition_callback(msg)
     " JSON format is `{"path":"-","line":3,"endline":3,"start":10,"end":15}`.
     let json = json_decode(a:msg)
     let cmd = s:parse(json)
-    execute cmd
-    call cursor(json['line'], json['start'])
+    if cmd == ''
+      echomsg '[Flood] Definition not found.'
+    else
+      execute cmd
+      call cursor(json['line'], json['start'])
+    endif
   catch
-    echomsg 'Flow server is not running.'
+    echomsg '[Flood] get-def raised exception.'
     call flood#log(v:exception)
     call flood#log(a:msg)
   endtry

@@ -19,7 +19,7 @@ function! s:version_callback(msg)
     let ver = s:parse(responses)
     echomsg printf('Flow version is %s.', ver)
   catch
-    echomsg 'Flow server is not running.'
+    echomsg '[Flood] version exception raised.'
     echomsg a:msg
   endtry
 endfunction

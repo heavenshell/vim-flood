@@ -13,7 +13,7 @@ function! s:status_callback(msg)
     let response = json_decode(a:msg)
     echomsg printf('Flow server is running. Flow version is %s.', response['flowVersion'])
   catch
-    echomsg 'Flow server is not running.'
+    echomsg '[Flood] status raised exception.'
     call flood#log(v:exception)
     call flood#log(a:msg)
   endtry

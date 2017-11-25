@@ -34,7 +34,7 @@ function! s:imports_callback(msg)
       lwindow
     endif
   catch
-    echomsg 'Flow server is not running.'
+    echomsg '[Flood] get-imports raised exception.'
     call flood#log(a:msg)
   endtry
 endfunction
