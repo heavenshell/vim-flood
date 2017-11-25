@@ -3,7 +3,6 @@
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
-
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -33,4 +32,3 @@ endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
