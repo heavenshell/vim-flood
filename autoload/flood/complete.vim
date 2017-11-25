@@ -126,7 +126,7 @@ function! s:complete_callback(ch, msg, input_word, offset)
       execute 'set completeopt=' . _completeopt
     endif
   catch
-    echomsg 'Flow server is not running.'
+    echomsg '[Flood] autocomplet raised exception.'
     call flood#log(v:exception)
     call flood#log(a:msg)
   finally

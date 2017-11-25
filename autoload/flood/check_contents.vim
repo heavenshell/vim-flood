@@ -75,7 +75,7 @@ function! s:check_callback(ch, msg, mode)
       cwindow
     endif
   catch
-    echomsg 'Flow server is not running.'
+    echomsg '[Flood] check-content raised exception.'
     call flood#log(v:exception)
     call flood#log(a:msg)
   finally

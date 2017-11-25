@@ -17,7 +17,7 @@ function! s:type_at_pos_callback(msg, cword)
       echo msg
     endif
   catch
-    echomsg 'Flow server is not running.'
+    echomsg '[Flood] type-at-pos raised exception.'
     call flood#log(v:exception)
     call flood#log(a:msg)
   endtry
