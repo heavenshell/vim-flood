@@ -1,6 +1,6 @@
 # vim-flood
 
-vim-flood is  plugin for [Facebook Flow](https://flowtype.org/).
+vim-flood is plugin for [Facebook Flow](https://flowtype.org/).
 
 Autocompletion.
 
@@ -20,8 +20,8 @@ Type check.
   - Flow content-check
 - Defeinition
   - Gets the definition location of a variable or property
-- Importers
-  - Gets a list of all importers for one or more given modules
+- FindRefs
+  - Gets the reference locations of a variable or property
 - Imports
   - Get names of all modules imported by one or more given modules
 - Start

@@ -21,7 +21,7 @@ endif
 command! -buffer FloodCheck         :call flood#check#run()
 command! -buffer FloodCheckContents :call flood#check_contents#run()
 command! -buffer FloodDefinition    :call flood#definition#run()
-command! -buffer FloodImporters     :call flood#importers#run()
+command! -buffer FloodFindRefs      :call flood#find_refs#run()
 command! -buffer FloodImports       :call flood#imports#run()
 command! -buffer FloodStart         :call flood#start#run()
 command! -buffer FloodStatus        :call flood#status#run()
@@ -33,7 +33,7 @@ command! -buffer FloodVersion       :call flood#version#run()
 noremap <silent> <buffer> <Plug>(FloodCheck)          :FloodCheck <CR>
 noremap <silent> <buffer> <Plug>(FloodCheckContents)  :FloodCheckContents <CR>
 noremap <silent> <buffer> <Plug>(FloodDefinition)     :FloodDefinition <CR>
-noremap <silent> <buffer> <Plug>(FloodImporters)      :FloodImporters <CR>
+noremap <silent> <buffer> <Plug>(FloodFindRefs)       :FloodFindRefs <CR>
 noremap <silent> <buffer> <Plug>(FloodImports)        :FloodImports <CR>
 noremap <silent> <buffer> <Plug>(FloodStart)          :FloodStart <CR>
 noremap <silent> <buffer> <Plug>(FloodStatus)         :FloodStatus <CR>
