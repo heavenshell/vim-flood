@@ -3,7 +3,6 @@
 " WebPage:  http://github.com/heavenshell/vim-flood/
 " Description: Vim plugin for Facebook FlowType.
 " License: BSD, see LICENSE for more details.
-
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -30,11 +29,17 @@ function! s:imports_callback(msg)
     let outputs = s:parse(responses)
 
     call setloclist(0, outputs, 'r')
-    if len(outputs) > 0 && g:flood_enable_quickfix == 1
-      lwindow
+    let cnt = len(outputs)
+    if cnt > 0
+      if g:flood_enable_quickfix == 1
+        lwindow
+      else
+        echomsg printf('[Flood] get-imports %d found.', cnt)
+      endif
     endif
   catch
     echomsg '[Flood] get-imports raised exception.'
+    call flood#log(v:exception)
     call flood#log(a:msg)
   endtry
 endfunction
