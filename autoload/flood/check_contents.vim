@@ -22,9 +22,14 @@ function! s:parse(errors)
       let path = ''
       let _messages = []
       for message in e['message']
-        if message['context'] == 'v:null'
+        if message['context'] == 'v:null' && message['descr'] == ''
           continue
         endif
+        if message['context'] == 'v:null'
+          let _messages[-1]['text'] .= ' ' . message['descr']
+          continue
+        endif
+
         let text = text . ' ' . message['descr']
         let line = message['line']
         let start = message['start']
@@ -36,7 +41,7 @@ function! s:parse(errors)
 
         call add(_messages, { 'text': text, 'line': line, 'start': start, 'path': path })
       endfor
-      "" expand('%t'),
+
       let level = e['level'] ==# 'error' ? 'E' : 'W'
       for e in _messages
         let text = substitute(text, '^\s', '', 'g')
