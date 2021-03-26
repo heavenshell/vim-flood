@@ -2,7 +2,11 @@
 
 vim-flood is plugin for [Facebook Flow](https://flowtype.org/).
 
-Autocompletion.
+This plugin is no more maintained.
+
+Use [vim-lsp-setting](https://github.com/mattn/vim-lsp-settings/).
+
+## Autocompletion
 
 ![Cmplete FlowType](./assets/vim-flood-complete.gif)
 
@@ -10,7 +14,7 @@ Type check.
 
 ![Type check](./assets/vim-flood-typecheck.gif)
 
-# Features
+## Features
 
 - Autocompletion
   - omni-completion(Default)
